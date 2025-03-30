@@ -5,7 +5,7 @@ import com.example.droidpractice3.listwithdetails.domain.entity.MovieShortEntity
 
 interface IMovieRepository {
 
-    fun getList(q: String = ""): List<MovieShortEntity>
+    suspend fun getList(q: String): List<MovieShortEntity>
 
-    fun getById(id: String): MovieFullEntity?
+    suspend fun getById(id: String): MovieFullEntity?
 }
