@@ -20,10 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.droidpractice3.R
+import com.example.droidpractice3.container.presentation.viewmodel.ListViewModel
 import com.example.droidpractice3.listwithdetails.data.repository.MoviesRepository
 import com.example.droidpractice3.listwithdetails.domain.entity.MovieShortEntity
 import com.example.droidpractice3.ui.component.EmptyDataBox
@@ -41,8 +38,9 @@ import com.github.terrakok.modo.Screen
 import com.github.terrakok.modo.ScreenKey
 import com.github.terrakok.modo.generateScreenKey
 import com.github.terrakok.modo.stack.LocalStackNavigation
-import com.github.terrakok.modo.stack.forward
 import kotlinx.parcelize.Parcelize
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Parcelize
 class ListScreen(
@@ -52,20 +50,15 @@ class ListScreen(
     @Composable
     override fun Content(modifier: Modifier) {
         val navigation = LocalStackNavigation.current
-        var search by remember { mutableStateOf("") }
 
-        var items by remember {
-            mutableStateOf(MoviesRepository().getList(search))
-        }
+        val viewModel = koinViewModel<ListViewModel> { parametersOf(navigation) }
+        val state = viewModel.viewState
 
         Scaffold(
             topBar = {
                 TextField(
-                    value = search,
-                    onValueChange = {
-                        search = it
-                        items = MoviesRepository().getList(search)
-                    },
+                    value = state.query,
+                    onValueChange = viewModel::onQueryChanged,
                     label = { Text(stringResource(R.string.search)) },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -75,15 +68,15 @@ class ListScreen(
             },
             contentWindowInsets = WindowInsets(0.dp),
         ) {
-            if (items.isEmpty()) {
+            if (state.isEmpty) {
                 EmptyDataBox("По запросу нет результатов")
             }
 
             LazyColumn(Modifier.padding(it)) {
-                items(items) {
+                items(state.items) {
                     MovieItem(
                         item = it,
-                        Modifier.clickable { navigation.forward(DetailsScreen(movieId = it.id)) }
+                        Modifier.clickable { viewModel.onItemClicked(it.id) }
                     )
                 }
             }

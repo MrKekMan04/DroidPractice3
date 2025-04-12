@@ -47,8 +47,8 @@ class DetailsScreen(
 
         MovieScreenContent(
             state,
-            onBackPressed = { viewModel.back() },
-            onRatingChanged = { viewModel.onRatingChanged(it) }
+            onBackPressed = viewModel::back,
+            onRatingChanged = viewModel::onRatingChanged
         )
     }
 }

@@ -3,7 +3,7 @@ package com.example.droidpractice3.listwithdetails.domain.entity
 import androidx.annotation.StringRes
 import com.example.droidpractice3.R
 
-class MovieShortEntity(
+data class MovieShortEntity(
     val id: String,
     val title: String,
     val year: String,
