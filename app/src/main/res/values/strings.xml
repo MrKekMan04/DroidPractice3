@@ -9,4 +9,14 @@
     <string name="my_films">Мои фильмы</string>
     <string name="update">Обновить</string>
     <string name="more">Ещё</string>
+    <string name="profile">Профиль</string>
+    <string name="profile_edit">Редактировать профиль</string>
+    <string name="gallery">Галерея</string>
+    <string name="camera">Камера</string>
+    <string name="image_source">Источник изображения</string>
+    <string name="permission_denied">Нет доступа</string>
+    <string name="name">Имя</string>
+    <string name="document">Понравившийся постер</string>
+    <string name="document_url">URL понравившегося постера</string>
+    <string name="confirm">Принять</string>
 </resources>
