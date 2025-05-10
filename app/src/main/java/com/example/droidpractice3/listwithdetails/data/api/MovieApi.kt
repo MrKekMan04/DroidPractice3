@@ -6,10 +6,12 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface MovieApi {
+
     @GET("/")
     suspend fun getMovies(
         @Query("s") search: String,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("type") type: String?
     ): MoviesSearchResponse
 
     @GET("/")
