@@ -30,9 +30,10 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.droidpractice3.R
 import com.example.droidpractice3.container.presentation.viewmodel.ListViewModel
-import com.example.droidpractice3.listwithdetails.data.repository.MoviesRepository
+import com.example.droidpractice3.listwithdetails.data.mock.MoviesData
 import com.example.droidpractice3.listwithdetails.domain.entity.MovieShortEntity
-import com.example.droidpractice3.ui.component.EmptyDataBox
+import com.example.droidpractice3.ui.component.FullscreenLoading
+import com.example.droidpractice3.ui.component.FullscreenMessage
 import com.example.droidpractice3.ui.theme.Spacing
 import com.github.terrakok.modo.Screen
 import com.github.terrakok.modo.ScreenKey
@@ -68,8 +69,19 @@ class ListScreen(
             },
             contentWindowInsets = WindowInsets(0.dp),
         ) {
+            if (state.isLoading) {
+                FullscreenLoading()
+                return@Scaffold
+            }
+
+            state.error?.let {
+                FullscreenMessage(msg = it)
+                return@Scaffold
+            }
+
             if (state.isEmpty) {
-                EmptyDataBox("По запросу нет результатов")
+                FullscreenMessage("По запросу нет результатов")
+                return@Scaffold
             }
 
             LazyColumn(Modifier.padding(it)) {
@@ -122,5 +134,5 @@ fun MovieItem(
 @Preview(showBackground = true)
 @Composable
 fun MovieItemPreview() {
-    MovieItem(item = MoviesRepository().getList().first())
+    MovieItem(item = MoviesData.moviesShort.first())
 }

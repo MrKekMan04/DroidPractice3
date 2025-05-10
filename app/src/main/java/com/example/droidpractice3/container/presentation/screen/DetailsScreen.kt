@@ -1,5 +1,6 @@
 package com.example.droidpractice3.container.presentation.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -7,20 +8,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.droidpractice3.container.presentation.state.MovieDetailState
 import com.example.droidpractice3.container.presentation.viewmodel.DetailsViewModel
-import com.example.droidpractice3.listwithdetails.data.repository.MoviesRepository
+import com.example.droidpractice3.listwithdetails.data.mock.MoviesData
 import com.example.droidpractice3.listwithdetails.domain.entity.MovieFullEntity
-import com.example.droidpractice3.ui.component.EmptyDataBox
+import com.example.droidpractice3.listwithdetails.domain.entity.MovieShortEntity
+import com.example.droidpractice3.ui.component.FullscreenLoading
+import com.example.droidpractice3.ui.component.FullscreenMessage
 import com.example.droidpractice3.ui.component.RatingBar
 import com.example.droidpractice3.ui.component.SimpleAppBar
 import com.example.droidpractice3.ui.theme.Spacing
@@ -62,14 +70,22 @@ private fun MovieScreenContent(
     Scaffold(
         topBar = { SimpleAppBar(state.movie?.title.orEmpty(), onBackPressed) },
     ) {
-        val movie = state.movie ?: run {
-            EmptyDataBox("По запросу нет результатов")
+        if (state.isLoading) {
+            FullscreenLoading()
             return@Scaffold
         }
+
+        state.error?.let {
+            FullscreenMessage(msg = it)
+            return@Scaffold
+        }
+
+        val movie = state.movie ?: return@Scaffold
 
         Column(
             Modifier
                 .padding(it)
+                .verticalScroll(rememberScrollState())
                 .padding(Spacing.medium)
         ) {
             Row {
@@ -98,6 +114,21 @@ private fun MovieScreenContent(
             Row {
                 movie.ratings.forEach { rating ->
                     RatingItem(rating)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(Spacing.medium))
+
+            Column(
+                Modifier
+                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .padding(Spacing.medium)) {
+                Text(
+                    text = "Связанные фильмы",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                state.related.forEach { movie ->
+                    MovieItem(item = movie)
                 }
             }
 
@@ -139,8 +170,11 @@ private fun RowScope.RatingItem(rating: MovieFullEntity.Rating) {
 @Composable
 private fun MovieScreenContentPreview() {
     MovieScreenContent(object : MovieDetailState {
-        override val movie = MoviesRepository().getById("tt1856101")
+        override val movie = MoviesData.moviesFull.find { it.imdbID == "tt1856101" }
         override val rating = 0f
         override val isRatingVisible = true
+        override val isLoading = false
+        override val error = null
+        override val related: List<MovieShortEntity> = MoviesData.moviesShort.take(3)
     }, {}, {})
 }

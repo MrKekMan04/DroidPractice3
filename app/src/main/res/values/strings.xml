@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">Droid Practice 3</string>
     <string name="anime">Аниме</string>
+    <string name="movie">Фильм</string>
+    <string name="series">Сериал</string>
+    <string name="other">Другое</string>
     <string name="search">Поиск</string>
 </resources>

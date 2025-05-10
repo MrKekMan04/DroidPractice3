@@ -1,6 +1,7 @@
 package com.example.droidpractice3
 
 import android.app.Application
+import com.example.droidpractice3.di.networkModule
 import com.example.droidpractice3.di.rootModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -14,7 +15,7 @@ class App : Application() {
         startKoin {
             androidLogger()
             androidContext(this@App)
-            modules(rootModule)
+            modules(rootModule, networkModule)
         }
     }
 }
