@@ -5,4 +5,8 @@
     <string name="series">Сериал</string>
     <string name="other">Другое</string>
     <string name="search">Поиск</string>
+    <string name="type">Тип</string>
+    <string name="my_films">Мои фильмы</string>
+    <string name="update">Обновить</string>
+    <string name="more">Ещё</string>
 </resources>

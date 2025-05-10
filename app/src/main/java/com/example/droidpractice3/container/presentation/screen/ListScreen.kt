@@ -1,6 +1,7 @@
 package com.example.droidpractice3.container.presentation.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -23,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +39,7 @@ import com.example.droidpractice3.listwithdetails.data.mock.MoviesData
 import com.example.droidpractice3.listwithdetails.domain.entity.MovieShortEntity
 import com.example.droidpractice3.ui.component.FullscreenLoading
 import com.example.droidpractice3.ui.component.FullscreenMessage
+import com.example.droidpractice3.ui.component.SelectionDialog
 import com.example.droidpractice3.ui.theme.Spacing
 import com.github.terrakok.modo.Screen
 import com.github.terrakok.modo.ScreenKey
@@ -57,18 +63,44 @@ class ListScreen(
 
         Scaffold(
             topBar = {
-                TextField(
-                    value = state.query,
-                    onValueChange = viewModel::onQueryChanged,
-                    label = { Text(stringResource(R.string.search)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Spacing.small),
-                    leadingIcon = { Icon(Icons.Rounded.Search, null) }
-                )
+                Row(
+                    Modifier.padding(Spacing.small),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextField(
+                        value = state.query,
+                        onValueChange = { viewModel.onQueryChanged(it) },
+                        label = { Text(stringResource(R.string.search)) },
+                        modifier = Modifier.weight(1f),
+                        leadingIcon = { Icon(Icons.Rounded.Search, null) }
+                    )
+
+                    BadgedBox(
+                        badge = { if (state.hasBadge) Badge() },
+                        Modifier.padding(Spacing.small)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = stringResource(R.string.more),
+                            modifier = Modifier.clickable { viewModel.onFiltersClicked() }
+                        )
+                    }
+                }
             },
             contentWindowInsets = WindowInsets(0.dp),
         ) {
+            if (state.showTypesDialog) {
+                SelectionDialog(
+                    onDismissRequest = { viewModel.onSelectionDialogDismissed() },
+                    onConfirmation = { viewModel.onFiltersConfirmed() },
+                    title = stringResource(R.string.type),
+                    variants = state.typesAvailable,
+                    selectedVariant = state.selectedType
+                ) { variant, isSelected ->
+                    viewModel.onSelectedVariantChanged(variant, isSelected)
+                }
+            }
+
             if (state.isLoading) {
                 FullscreenLoading()
                 return@Scaffold
@@ -85,10 +117,15 @@ class ListScreen(
             }
 
             LazyColumn(Modifier.padding(it)) {
-                items(state.items) {
+                items(state.items) { item ->
                     MovieItem(
-                        item = it,
-                        Modifier.clickable { viewModel.onItemClicked(it.id) }
+                        item = item,
+                        Modifier.pointerInput(Unit) {
+                            detectTapGestures(
+                                onTap = { viewModel.onItemClicked(item.id) },
+                                onDoubleTap = { viewModel.onItemDoubleClicked(item) }
+                            )
+                        }
                     )
                 }
             }
