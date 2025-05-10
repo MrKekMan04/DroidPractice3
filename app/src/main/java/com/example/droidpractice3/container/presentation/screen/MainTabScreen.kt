@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,6 +28,7 @@ import kotlinx.parcelize.Parcelize
 class MainTabScreenFinal(
     private val navModel: MultiScreenNavModel = MultiScreenNavModel(
         ListScreen(),
+        FavouritesScreen(),
         ProfileScreen(),
         selected = 0
     )
@@ -95,5 +97,6 @@ enum class MainTabs(
     val title: String
 ) {
     LIST(Icons.AutoMirrored.Rounded.List, "List"),
+    FAVOURITES(Icons.Rounded.FavoriteBorder, "Favourites"),
     PROFILE(Icons.Default.Face, "Profile")
 }

@@ -18,6 +18,8 @@ retrofit = "2.11.0"
 chuckerVersion = "4.1.0"
 datastorePreferences = "1.1.6"
 roomVersion = "2.7.1"
+protobufJavalite = "4.30.2"
+protobufKotlinLite = "4.30.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,8 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 chuckerteam-chucker = { module = "com.github.chuckerteam.chucker:library", version.ref = "chuckerVersion" }
 chuckerteam-chucker-no-op = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chuckerVersion" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protobufJavalite" }
+protobuf-kotlin-lite = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
