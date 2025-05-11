@@ -5,10 +5,12 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -33,7 +35,6 @@ import com.github.terrakok.modo.Screen
 import com.github.terrakok.modo.ScreenKey
 import com.github.terrakok.modo.generateScreenKey
 import com.github.terrakok.modo.stack.LocalStackNavigation
-import com.github.terrakok.modo.stack.back
 import kotlinx.parcelize.Parcelize
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -67,18 +68,17 @@ class EditScreen(
         }
         val permissionRequester =
             rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (!isGranted) {
+                ActivityResultContracts.RequestMultiplePermissions()
+            ) { map: Map<String, Boolean> ->
+                if (map.values.contains(false)) {
                     val dialog = AlertDialog.Builder(context)
                         .setMessage(context.getString(R.string.permission_denied))
                         .setCancelable(false)
                         .setPositiveButton(context.getString(R.string.confirm)) { _, _ ->
-                            navigation.back()
+                            viewModel.onPermissionDenied()
                         }
                     dialog.show()
                 }
-                viewModel.onPermissionDenied()
             }
 
         fun onCameraSelected() {
@@ -98,11 +98,12 @@ class EditScreen(
             topBar = {
                 EditBar(
                     title = stringResource(R.string.profile_edit),
-                    onBackPressed = { navigation.back() },
+                    onBackPressed = { viewModel.onBackClicked() },
                     onSavePressed = { viewModel.onSaveClicked() }
                 )
             }
         ) { paddingValues ->
+            Column(modifier = Modifier.padding(paddingValues)) {}
             ProfileEditForm(
                 modifier = Modifier
                     .padding(paddingValues)
@@ -113,7 +114,15 @@ class EditScreen(
                 name = state.name,
                 onNameChanged = { name -> viewModel.onNameChanged(name) },
                 documentURL = state.documentURL,
-                onDocumentChanged = { url -> viewModel.onDocumentChanged(url) }
+                onDocumentChanged = { url -> viewModel.onDocumentChanged(url) },
+                time = state.notificationTime,
+                timeString = state.timeString,
+                onTimeChanged = { time -> viewModel.onTimeChanged(time) },
+                timeError = state.timeError,
+                showTimePicker = state.showTimePicker,
+                onTimePickerClicked = { viewModel.onTimePickerClicked() },
+                onTimeCanceled = { viewModel.onTimeCanceled() },
+                onTimeConfirmed = { h, m -> viewModel.onTimeConfirmed(h, m) }
             )
         }
 
@@ -136,14 +145,26 @@ class EditScreen(
 
         if (state.showPermissionDialog) {
             LaunchedEffect(Unit) {
-                if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.Q &&
-                    ContextCompat.checkSelfPermission(
+                val permissions = mutableListOf<String>()
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                    && ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
-                    permissionRequester.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    permissions.add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+
+                permissionRequester.launch(permissions.toTypedArray())
             }
         }
     }
