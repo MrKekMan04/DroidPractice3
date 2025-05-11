@@ -19,4 +19,11 @@
     <string name="document">Понравившийся постер</string>
     <string name="document_url">URL понравившегося постера</string>
     <string name="confirm">Принять</string>
+    <string name="cancel">Отменить</string>
+    <string name="notifications_channel_id">notifications_channel</string>
+    <string name="notifications_channel_name">Уведомления</string>
+    <string name="notifications_title">Время смотреть фильм!</string>
+    <string name="notifications_prompt">Время просмотра фильма</string>
+    <string name="notifications_content">Время посмотреть что-то новое, %s!</string>
+    <string name="notifications_error_invalid">Неверный формат времени</string>
 </resources>

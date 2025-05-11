@@ -98,4 +98,5 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.protobuf.javalite)
     implementation(libs.protobuf.kotlin.lite)
+    implementation(libs.threetenabp)
 }

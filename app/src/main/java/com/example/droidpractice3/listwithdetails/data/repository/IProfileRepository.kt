@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.qualifier.named
 import org.koin.java.KoinJavaComponent.inject
+import org.threeten.bp.LocalTime
 
 class ProfileRepository : IProfileRepository {
 
@@ -19,12 +20,14 @@ class ProfileRepository : IProfileRepository {
     override suspend fun setProfile(
         avatarURL: String,
         name: String,
-        documentURL: String
+        documentURL: String,
+        notificationTime: LocalTime
     ): ProfileEntity = dataStore.updateData {
         it.toBuilder().apply {
             this.avatarUri = avatarURL
             this.name = name
             this.documentUrl = documentURL
+            this.notificationTime = notificationTime.toString()
         }.build()
     }
 

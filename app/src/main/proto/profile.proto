@@ -7,4 +7,5 @@ message ProfileEntity {
   string avatar_uri = 1;
   string name = 2;
   string document_url = 3;
+  string notification_time = 4;
 }

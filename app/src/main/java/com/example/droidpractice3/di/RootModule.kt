@@ -39,7 +39,7 @@ val rootModule = module {
     viewModel { DetailsViewModel(get(), it.get(), it.get()) }
     viewModel { ProfileViewModel(get()) }
     viewModel { FavouritesViewModel(get()) }
-    viewModel { EditViewModel(get()) }
+    viewModel { EditViewModel(get(), it.get()) }
 }
 
 private const val dataStoreFileName: String = "default"
